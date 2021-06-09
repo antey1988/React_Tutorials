@@ -6,17 +6,20 @@ export default class TutorialsList extends Component {
     constructor(props) {
         super(props);
         this.onChangeSearchTitle = this.onChangeSearchTitle.bind(this);
+        this.onChangeSearchDescription = this.onChangeSearchDescription.bind(this);
         this.retrieveTutorials = this.retrieveTutorials.bind(this);
         this.refreshList = this.refreshList.bind(this);
         this.setActiveTutorial = this.setActiveTutorial.bind(this);
         this.removeAllTutorials = this.removeAllTutorials.bind(this);
         this.searchTitle = this.searchTitle.bind(this);
+        this.searchDescription = this.searchDescription.bind(this);
 
         this.state = {
           tutorials: [],
           currentTutorial: null,
           currentIndex: -1,
-          searchTitle: ""
+          searchTitle: "",
+		  searchDescription: ""
         };
     }
 
@@ -26,7 +29,15 @@ export default class TutorialsList extends Component {
 
     onChangeSearchTitle(e) {
         this.setState({
-          searchTitle: e.target.value
+          searchTitle: e.target.value,
+		  searchDescription: ""
+        });
+    }
+	
+	onChangeSearchDescription(e) {
+        this.setState({
+          searchDescription: e.target.value,
+		  searchTitle: ""
         });
     }
 
@@ -81,9 +92,22 @@ export default class TutorialsList extends Component {
                 console.log(e);
             });
     }
+	
+	searchDescription() {
+        TutorialDataService.findByDescription(this.state.searchDescription)
+            .then(response => {
+                this.setState({
+                tutorials: response.data
+                });
+                console.log(response.data);
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    }
 
     render() {
-        const { searchTitle, tutorials, currentTutorial, currentIndex } = this.state;
+        const { searchTitle, searchDescription, tutorials, currentTutorial, currentIndex } = this.state;
 
         return (
             <div className="list row">
@@ -103,7 +127,29 @@ export default class TutorialsList extends Component {
                                 type="button"
                                 onClick={this.searchTitle}
                             >
-                                Search
+                                Search by Title
+                            </button>
+                        </div>
+                    </div>
+                </div>
+				
+                <div className="col-md-10">
+                    <div className="input-group mb-3">
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Search by description"
+                            value={searchDescription}
+                            onChange={this.onChangeSearchDescription}
+                        />
+
+                        <div className="input-group-append">
+                            <button
+                                className="btn btn-primary"
+                                type="button"
+                                onClick={this.searchDescription}
+                            >
+                                Search by Desc
                             </button>
                         </div>
                     </div>
